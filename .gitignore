@@ -124,3 +124,11 @@ replay_pid*
 
 # Git worktrees
 .worktrees/
+
+# Miscellaneous
+**/.agents/
+**/.claude/
+**/.copilot/
+**/.cursor/
+**/AGENTS.md
+**/CLAUDE.md
