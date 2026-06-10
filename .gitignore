@@ -125,6 +125,12 @@ replay_pid*
 # Git worktrees
 .worktrees/
 
+# Runtime data (mutable uploads, auto-login session)
+data/pictures/*
+!data/pictures/.gitkeep
+data/session/*
+!data/session/.gitkeep
+
 # Miscellaneous
 **/.agents/
 **/.claude/

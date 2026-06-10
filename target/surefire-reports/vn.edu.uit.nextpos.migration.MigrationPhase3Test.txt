@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: vn.edu.uit.nextpos.migration.MigrationPhase3Test
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.139 s -- in vn.edu.uit.nextpos.migration.MigrationPhase3Test
