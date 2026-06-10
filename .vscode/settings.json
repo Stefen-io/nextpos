@@ -1,0 +1,30 @@
+{
+  "files.encoding": "utf8",
+  "files.autoSave": "onFocusChange",
+  "terminal.integrated.suggest.runOnEnter": "exactMatch",
+  "terminal.integrated.suggest.enabled": true,
+  "terminal.integrated.cwd": "${workspaceFolder}",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSaveMode": "modificationsIfAvailable",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": true,
+  "editor.rulers": [
+    {
+      "column": 100,
+      "color": "#00ff00"
+    },
+    {
+      "column": 120,
+      "color": "#0000ff"
+    }
+  ],
+  "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
+  "java.format.settings.profile": "GoogleStyle",
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java"
+  },
+  "files.associations": {
+    "*.json": "jsonc"
+  }
+}
