@@ -1,6 +1,6 @@
-# NextPOS
+# 🛒 NextPOS - Point of Sale Management Application
 
-Desktop Point of Sale (POS) for mini-marts and convenience stores. Built with **Java 21**, **Maven**, **Swing** + **FlatLaf**, and **MySQL 8**.
+**NextPOS** is a desktop-based Point of Sale (POS) management system designed for mini-marts and convenience stores. Built with **Java 21**, **Maven**, **Swing** + **FlatLaf**, and **MySQL 8**. It is a free and open-source POS system that is easy to use and deploy.
 
 ## Prerequisites
 
