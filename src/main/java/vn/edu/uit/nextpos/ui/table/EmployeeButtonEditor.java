@@ -1,5 +1,6 @@
 package vn.edu.uit.nextpos.ui.table;
 
+import vn.edu.uit.nextpos.config.AuthConstants;
 import vn.edu.uit.nextpos.dao.EmployeeDAO;
 import vn.edu.uit.nextpos.models.Employee;
 import javax.swing.*;
@@ -29,8 +30,19 @@ public class EmployeeButtonEditor extends AbstractCellEditor implements TableCel
         @Override
         public Component getTableCellRendererComponent(JTable tbl, Object v, boolean sel, boolean f, int r, int c) {
             setBackground(sel ? tbl.getSelectionBackground() : tbl.getBackground());
+            del.setVisible(!isDefaultAdmin(tbl, r));
             return this;
         }
+    }
+
+    private static boolean isDefaultAdmin(JTable table, int row) {
+        Object username = table.getValueAt(row, 2);
+        return AuthConstants.DEFAULT_ADMIN_USERNAME.equals(username);
+    }
+
+    private boolean isDefaultAdmin(int row) {
+        Object username = model.getValueAt(row, 2);
+        return AuthConstants.DEFAULT_ADMIN_USERNAME.equals(username);
     }
 
     enum Click {
@@ -76,6 +88,7 @@ public class EmployeeButtonEditor extends AbstractCellEditor implements TableCel
     public Component getTableCellEditorComponent(JTable tbl, Object v, boolean sel, int r, int c) {
         row = r;
         click = Click.NONE;
+        del.setVisible(!isDefaultAdmin(r));
         return panel;
     }
 
@@ -92,6 +105,9 @@ public class EmployeeButtonEditor extends AbstractCellEditor implements TableCel
             case EDIT ->
                 showForm.accept(new Employee(id, name, username, "", role, phone, email));
             case DELETE -> {
+                if (isDefaultAdmin(row)) {
+                    break;
+                }
                 int confirm = JOptionPane.showConfirmDialog(
                         null,
                         "Bạn có chắc chắn muốn xóa nhân viên \"" + name + "\"?",
