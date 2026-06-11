@@ -143,10 +143,17 @@ public class POSPanel extends JPanel {
             }
         });
 
+        JPanel searchFieldWrap = new JPanel(new BorderLayout(8, 0));
+        searchFieldWrap.setOpaque(false);
+        JLabel lblSearchIcon = new JLabel(IconUtil.loadSvg("search.svg", 20));
+        lblSearchIcon.setToolTipText("Tìm kiếm sản phẩm");
+        searchFieldWrap.add(lblSearchIcon, BorderLayout.WEST);
+        searchFieldWrap.add(tfSearch, BorderLayout.CENTER);
+
         JButton btnScan = new JButton("SCAN");
         btnScan.setIcon(IconUtil.loadSvg("scan-qr-code.svg", 20));
 
-        searchPanel.add(tfSearch);
+        searchPanel.add(searchFieldWrap);
         searchPanel.add(btnScan);
         btnScan.addActionListener(e -> {
             BarcodeScanner.scan(barcode -> {
