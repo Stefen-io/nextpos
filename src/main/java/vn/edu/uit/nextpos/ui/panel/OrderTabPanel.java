@@ -99,8 +99,8 @@ public class OrderTabPanel extends JPanel {
         double total = 0;
         for (int i = 0; i < model.getRowCount(); i++) {
             Object val = model.getValueAt(i, 4);
-            if (val instanceof Number num) {
-                total += num.doubleValue();
+            if (val instanceof Number) {
+                total += ((Number) val).doubleValue();
             }
         }
         return total;
@@ -110,8 +110,8 @@ public class OrderTabPanel extends JPanel {
         int count = 0;
         for (int i = 0; i < model.getRowCount(); i++) {
             Object val = model.getValueAt(i, 2);
-            if (val instanceof Number num) {
-                count += num.intValue();
+            if (val instanceof Number) {
+                count += ((Number) val).intValue();
             }
         }
         return count;

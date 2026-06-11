@@ -48,7 +48,9 @@ public class SideBarMenu extends JPanel {
         addMenu("Hóa đơn", IconUtil.loadSvg("alternate_file.svg", 20), new InvoicePanel(), onMenuClick);
         addMenu("Thống kê", IconUtil.loadSvg("pie_chart.svg", 20), null, onMenuClick);
         addMenu("Nhập / Xuất kho", IconUtil.loadSvg("stock.svg", 20), new StockPanel(), onMenuClick);
-        addMenu("Nhân viên / Chức vụ", IconUtil.loadSvg("employee-group-line.svg", 20), new EmployeePanel(), onMenuClick);
+        if (Session.isAdmin()) {
+            addMenu("Nhân viên / Chức vụ", IconUtil.loadSvg("employee-group-line.svg", 20), new EmployeePanel(), onMenuClick);
+        }
         addMenu("Bảng điều khiển", IconUtil.loadSvg("terminal.svg", 20), new TerminalPanel(), onMenuClick);
         addMenu("Cài đặt hệ thống", IconUtil.loadSvg("cog.svg", 20), new SettingsPanel(), onMenuClick);
 

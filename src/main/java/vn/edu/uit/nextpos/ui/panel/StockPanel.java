@@ -226,7 +226,8 @@ public class StockPanel extends JPanel {
             component.setBackground(Color.WHITE);
         }
 
-        if (component instanceof Container container) {
+        if (component instanceof Container) {
+            Container container = (Container) component;
             for (Component child : container.getComponents()) {
                 // Trừ JTextField và JButton
                 if (!(child instanceof JTextField) && !(child instanceof JButton)) {

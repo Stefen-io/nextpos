@@ -2,7 +2,9 @@ package vn.edu.uit.nextpos.ui.panel;
 
 import vn.edu.uit.nextpos.dao.SettingsDAO;
 import vn.edu.uit.nextpos.models.Settings;
+import vn.edu.uit.nextpos.ui.dialog.ChangePasswordDialog;
 import vn.edu.uit.nextpos.util.IconUtil;
+import vn.edu.uit.nextpos.util.Session;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -151,6 +153,18 @@ public class SettingsPanel extends JPanel {
 
     private JPanel createButtonPanel() {
         JPanel panel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        JButton btnChangePassword = new JButton("Đổi mật khẩu");
+        btnChangePassword.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnChangePassword.setVisible(Session.isAdmin());
+        btnChangePassword.setPreferredSize(new Dimension(160, 40));
+        btnChangePassword.addActionListener(e -> {
+            Frame owner = (Frame) SwingUtilities.getWindowAncestor(this);
+            ChangePasswordDialog dialog = new ChangePasswordDialog(owner);
+            dialog.setVisible(true);
+        });
+        panel.add(btnChangePassword);
+
         btnSave = new JButton(" Lưu cài đặt", IconUtil.loadSvg("save.svg", 18));
         btnSave.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnSave.setBackground(new Color(76, 175, 80));
@@ -226,7 +240,8 @@ public class SettingsPanel extends JPanel {
             component.setBackground(Color.WHITE);
         }
 
-        if (component instanceof Container container) {
+        if (component instanceof Container) {
+            Container container = (Container) component;
             for (Component child : container.getComponents()) {
                 // Trừ JTextField và JButton
                 if (!(child instanceof JTextField) && !(child instanceof JButton)) {

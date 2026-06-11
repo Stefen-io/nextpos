@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 import vn.edu.uit.nextpos.dao.EmployeeDAO;
 import vn.edu.uit.nextpos.models.Employee;
+import vn.edu.uit.nextpos.util.AuthDefaults;
 import vn.edu.uit.nextpos.util.IconUtil;
 import vn.edu.uit.nextpos.util.Session;
 
@@ -22,9 +23,18 @@ public class LoginFrame extends JFrame {
     private JButton btnLogin;
 
     /**
-     * Khởi tạo giao diện đăng nhập và các thành phần hiển thị.
+     * Khởi tạo giao diện đăng nhập (không prefill — dùng sau đăng xuất).
      */
     public LoginFrame() {
+        this(false);
+    }
+
+    /**
+     * Khởi tạo giao diện đăng nhập.
+     *
+     * @param prefillDefaults true chỉ khi khởi động app lần đầu và auto-login thất bại
+     */
+    public LoginFrame(boolean prefillDefaults) {
         setTitle("Đăng nhập hệ thống");
         setSize(750, 420);
         setLocationRelativeTo(null);
@@ -50,6 +60,10 @@ public class LoginFrame extends JFrame {
 
         txtUsername = new JTextField();
         txtPassword = new JPasswordField();
+        if (prefillDefaults) {
+            txtUsername.setText(AuthDefaults.DEFAULT_USERNAME);
+            txtPassword.setText(AuthDefaults.DEFAULT_PASSWORD);
+        }
 
         JPanel usernamePanel = createInputField("Tên đăng nhập", txtUsername);
         JPanel passwordPanel = createInputField("Mật khẩu", txtPassword);

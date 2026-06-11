@@ -127,7 +127,8 @@ public class POSPanel extends JPanel {
 
                     item.addActionListener(ev -> {
                         Component selected = tabbedPane.getSelectedComponent();
-                        if (selected instanceof OrderTabPanel orderTab) {
+                        if (selected instanceof OrderTabPanel) {
+                            OrderTabPanel orderTab = (OrderTabPanel) selected;
                             orderTab.addToCart(p);
                             updatePayment(orderTab);
                         }
@@ -153,7 +154,8 @@ public class POSPanel extends JPanel {
                 if (product != null) {
                     SwingUtilities.invokeLater(() -> {
                         Component selected = tabbedPane.getSelectedComponent();
-                        if (selected instanceof OrderTabPanel orderTab) {
+                        if (selected instanceof OrderTabPanel) {
+                            OrderTabPanel orderTab = (OrderTabPanel) selected;
                             orderTab.addToCart(product);
                             updatePayment(orderTab);
                             JOptionPane.showMessageDialog(this, "Đã thêm sản phẩm: " + product.getName());
@@ -223,7 +225,8 @@ public class POSPanel extends JPanel {
                 switch (act) {
                     case "Xóa toàn bộ sản phẩm" -> {
                         Component selected = tabbedPane.getSelectedComponent();
-                        if (selected instanceof OrderTabPanel orderTab) {
+                        if (selected instanceof OrderTabPanel) {
+                            OrderTabPanel orderTab = (OrderTabPanel) selected;
                             int confirm = JOptionPane.showConfirmDialog(
                                     this,
                                     "Bạn có chắc chắn muốn xóa toàn bộ sản phẩm trong giỏ hàng?",
@@ -277,10 +280,11 @@ public class POSPanel extends JPanel {
 
     private void handlePayment() {
         Component selected = tabbedPane.getSelectedComponent();
-        if (!(selected instanceof OrderTabPanel orderTab)) {
+        if (!(selected instanceof OrderTabPanel)) {
             JOptionPane.showMessageDialog(this, "Không có đơn hàng nào được chọn.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        OrderTabPanel orderTab = (OrderTabPanel) selected;
 
         double customerPaid = paymentPanel.getCustomerPaid();
         double payable = paymentPanel.getPayableAmount();
@@ -354,7 +358,8 @@ public class POSPanel extends JPanel {
             component.setBackground(Color.WHITE);
         }
 
-        if (component instanceof Container container) {
+        if (component instanceof Container) {
+            Container container = (Container) component;
             for (Component child : container.getComponents()) {
                 // Trừ JTextField và JButton
                 if (!(child instanceof JTextField) && !(child instanceof JButton)) {

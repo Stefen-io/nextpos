@@ -1,5 +1,7 @@
 package vn.edu.uit.nextpos.util;
 
+import static vn.edu.uit.nextpos.util.AuthDefaults.ADMIN_ROLE_ID;
+
 import vn.edu.uit.nextpos.config.AppPaths;
 import vn.edu.uit.nextpos.dao.EmployeeDAO;
 import vn.edu.uit.nextpos.dao.UserSessionDAO;
@@ -23,6 +25,22 @@ public class Session {
 
     private static File getAccountFile() {
         return AppPaths.getSessionFile().toFile();
+    }
+
+    private static File getEverLoggedInMarker() {
+        return AppPaths.getSessionFile().getParent().resolve("ever_logged_in").toFile();
+    }
+
+    /**
+     * Có nên prefill mật khẩu mặc định trên màn đăng nhập hay không.
+     * Chỉ true khi chưa từng đăng nhập thành công trên máy này (lần đầu cài app).
+     */
+    public static boolean shouldPrefillDefaultCredentials() {
+        if (getEverLoggedInMarker().exists()) {
+            return false;
+        }
+        SavedAccount saved = readSavedAccount();
+        return saved == null || saved.isEmpty();
     }
 
     /**
@@ -71,6 +89,15 @@ public class Session {
      */
     public static boolean isLoggedIn() {
         return currentUser != null;
+    }
+
+    /**
+     * Kiểm tra người dùng hiện tại có quyền quản trị (role_id == 1).
+     *
+     * @return true nếu đang đăng nhập với vai trò admin
+     */
+    public static boolean isAdmin() {
+        return currentUser != null && currentUser.getRole_id() == ADMIN_ROLE_ID;
     }
 
     /**
@@ -171,6 +198,7 @@ public class Session {
             }
 
             login(emp);
+            markEverLoggedIn();
             currentSessionToken = UUID.randomUUID().toString();
             sessionDAO.openSession(emp.getId(), currentSessionToken, getIPAddress(), getDeviceInfo());
             System.out.println("✅ Auto-login thành công!");
@@ -198,9 +226,49 @@ public class Session {
                 writer.write(password);
                 System.out.println("💾 Đã lưu tài khoản vào file: " + accountFile.getAbsolutePath());
             }
+            markEverLoggedIn();
         } catch (IOException e) {
             System.err.println("❌ Không thể lưu tài khoản.");
             e.printStackTrace();
+        }
+    }
+
+    private static SavedAccount readSavedAccount() {
+        File accountFile = getAccountFile();
+        if (!accountFile.exists()) {
+            return null;
+        }
+        try (BufferedReader reader = new BufferedReader(new FileReader(accountFile))) {
+            return new SavedAccount(reader.readLine(), reader.readLine());
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private static void markEverLoggedIn() {
+        try {
+            AppPaths.ensureDirectoriesExist();
+            File marker = getEverLoggedInMarker();
+            if (!marker.exists()) {
+                marker.createNewFile();
+            }
+        } catch (IOException e) {
+            System.err.println("❌ Không thể ghi marker đăng nhập.");
+            e.printStackTrace();
+        }
+    }
+
+    private static final class SavedAccount {
+        private final String username;
+        private final String password;
+
+        private SavedAccount(String username, String password) {
+            this.username = username;
+            this.password = password;
+        }
+
+        private boolean isEmpty() {
+            return username == null || username.isEmpty() || password == null || password.isEmpty();
         }
     }
 

@@ -1,7 +1,6 @@
 package vn.edu.uit.nextpos;
 
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import vn.edu.uit.nextpos.util.Session;
 import vn.edu.uit.nextpos.view.LoginFrame;
@@ -24,8 +23,7 @@ public final class Application {
         Session.autoLoginFromFile();
 
         if (!Session.isLoggedIn()) {
-            JOptionPane.showMessageDialog(null, "Bạn cần đăng nhập trước khi sử dụng hệ thống.");
-            LoginFrame loginFrame = new LoginFrame();
+            LoginFrame loginFrame = new LoginFrame(Session.shouldPrefillDefaultCredentials());
             loginFrame.setExtendedState(JFrame.NORMAL);
             loginFrame.setLocationRelativeTo(null);
             loginFrame.setVisible(true);

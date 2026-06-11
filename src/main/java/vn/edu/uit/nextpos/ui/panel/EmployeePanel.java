@@ -10,17 +10,23 @@ import vn.edu.uit.nextpos.ui.components.RoundedButton;
 import vn.edu.uit.nextpos.ui.components.RoundedTextField;
 import vn.edu.uit.nextpos.ui.dialog.EmployeeFormDialog;
 import vn.edu.uit.nextpos.ui.table.EmployeeButtonEditor;
+import vn.edu.uit.nextpos.util.Session;
 
 public class EmployeePanel extends JPanel {
 
     private final EmployeeDAO dao = new EmployeeDAO();
-    private final DefaultTableModel model;
-    private final JTable table;
+    private DefaultTableModel model;
+    private JTable table;
 
     public EmployeePanel() {
         setLayout(new BorderLayout(20, 20));
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        if (!Session.isAdmin()) {
+            add(new JLabel("Bạn không có quyền truy cập chức năng này.", SwingConstants.CENTER), BorderLayout.CENTER);
+            return;
+        }
 
         // ==== Model & Table ====
         model = new DefaultTableModel(new String[]{"ID", "Tên", "Username", "Role", "SĐT", "Email", "Hành động"}, 0) {
