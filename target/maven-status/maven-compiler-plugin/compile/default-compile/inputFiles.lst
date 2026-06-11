@@ -1,4 +1,6 @@
 /home/thanh/workspace/projects/nextpos/src/main/java/vn/edu/uit/Main.java
+/home/thanh/workspace/projects/nextpos/src/main/java/vn/edu/uit/nextpos/Application.java
+/home/thanh/workspace/projects/nextpos/src/main/java/vn/edu/uit/nextpos/Startup.java
 /home/thanh/workspace/projects/nextpos/src/main/java/vn/edu/uit/nextpos/config/AppConfig.java
 /home/thanh/workspace/projects/nextpos/src/main/java/vn/edu/uit/nextpos/config/AppPaths.java
 /home/thanh/workspace/projects/nextpos/src/main/java/vn/edu/uit/nextpos/dao/AuditLogDAO.java

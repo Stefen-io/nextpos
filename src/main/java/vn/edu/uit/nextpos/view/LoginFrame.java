@@ -1,7 +1,7 @@
 package vn.edu.uit.nextpos.view;
 
-import com.formdev.flatlaf.FlatIntelliJLaf;
 import javax.swing.*;
+import vn.edu.uit.nextpos.Application;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
@@ -25,12 +25,6 @@ public class LoginFrame extends JFrame {
      * Khởi tạo giao diện đăng nhập và các thành phần hiển thị.
      */
     public LoginFrame() {
-        try {
-            UIManager.setLookAndFeel(new FlatIntelliJLaf());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         setTitle("Đăng nhập hệ thống");
         setSize(750, 420);
         setLocationRelativeTo(null);
@@ -184,6 +178,6 @@ public class LoginFrame extends JFrame {
      * @param args không sử dụng
      */
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new LoginFrame().setVisible(true));
+        Application.main(args);
     }
 }

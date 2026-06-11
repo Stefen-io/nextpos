@@ -28,6 +28,7 @@ vn/edu/uit/nextpos/dao/EmployeeDAO.class
 vn/edu/uit/Main.class
 vn/edu/uit/nextpos/models/InvoiceModel.class
 vn/edu/uit/nextpos/ui/table/EmployeeButtonEditor.class
+vn/edu/uit/nextpos/Application.class
 vn/edu/uit/nextpos/ui/panel/PaymentPanel$1.class
 vn/edu/uit/nextpos/models/StockOut.class
 vn/edu/uit/nextpos/ui/dialog/ProductFormDialog.class

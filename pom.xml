@@ -18,7 +18,7 @@
         <maven.compiler.release>21</maven.compiler.release>
 
         <!-- Entry point after Phase 1 source migration -->
-        <main.class>vn.edu.uit.nextpos.view.MainFrame</main.class>
+        <main.class>vn.edu.uit.nextpos.Application</main.class>
 
         <flatlaf.version>3.5.1</flatlaf.version>
         <flatlaf-extras.version>3.5.1</flatlaf-extras.version>

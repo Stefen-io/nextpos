@@ -88,6 +88,8 @@ nextpos/
 ├── src/
 │   ├── main/
 │   │   ├── java/vn/edu/uit/nextpos/
+│   │   │   ├── Application.java  # JVM entry point
+│   │   │   ├── Startup.java      # Bootstrap (paths, LAF, seed)
 │   │   │   ├── config/       # AppConfig, AppPaths
 │   │   │   ├── dao/          # Database access
 │   │   │   ├── models/       # Domain entities

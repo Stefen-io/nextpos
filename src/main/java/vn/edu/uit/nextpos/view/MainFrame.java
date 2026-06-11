@@ -1,12 +1,7 @@
 package vn.edu.uit.nextpos.view;
 
-import com.formdev.flatlaf.FlatIntelliJLaf;
 import java.awt.*;
-import java.util.Enumeration;
 import javax.swing.*;
-import vn.edu.uit.nextpos.config.AppPaths;
-import vn.edu.uit.nextpos.util.SQLSeeder;
-import vn.edu.uit.nextpos.util.Session;
 import vn.edu.uit.nextpos.util.IconUtil;
 
 /**
@@ -69,58 +64,5 @@ public class MainFrame extends JFrame {
         mainContent.add(panel, BorderLayout.CENTER);
         mainContent.revalidate();
         mainContent.repaint();
-    }
-
-    /**
-     * Hàm main – Điểm khởi chạy chính của ứng dụng POS. Thiết lập giao diện,
-     * font chữ mặc định, chạy script khởi tạo dữ liệu, kiểm tra đăng nhập và
-     * hiển thị giao diện tương ứng.
-     *
-     * @param args đối số dòng lệnh (không sử dụng)
-     */
-    public static void main(String[] args) {
-        AppPaths.ensureDirectoriesExist();
-
-        try {
-            UIManager.setLookAndFeel(new FlatIntelliJLaf()); // Giao diện FlatLaf
-            setUIFont(new Font("Segoe UI", Font.PLAIN, 14)); // Đặt font mặc định
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        SQLSeeder.runIfEnabled();
-
-        SwingUtilities.invokeLater(() -> {
-            Session.autoLoginFromFile();
-
-            if (!Session.isLoggedIn()) {
-                JOptionPane.showMessageDialog(null, "Bạn cần đăng nhập trước khi sử dụng hệ thống.");
-                LoginFrame loginFrame = new LoginFrame();
-                loginFrame.setExtendedState(JFrame.NORMAL);
-                loginFrame.setLocationRelativeTo(null);
-                loginFrame.setVisible(true);
-            } else {
-                MainFrame mainFrame = new MainFrame();
-                mainFrame.setExtendedState(JFrame.NORMAL);
-                mainFrame.setLocationRelativeTo(null);
-                mainFrame.setVisible(true);
-            }
-        });
-    }
-
-    /**
-     * Thiết lập font mặc định cho toàn bộ giao diện UI Swing. Giúp đảm bảo mọi
-     * thành phần đều sử dụng cùng một kiểu font.
-     *
-     * @param font đối tượng Font cần đặt làm mặc định
-     */
-    public static void setUIFont(Font font) {
-        for (Enumeration<Object> keys = UIManager.getDefaults().keys(); keys.hasMoreElements();) {
-            Object key = keys.nextElement();
-            Object value = UIManager.get(key);
-            if (value instanceof javax.swing.plaf.FontUIResource) {
-                UIManager.put(key, new javax.swing.plaf.FontUIResource(font));
-            }
-        }
     }
 }
