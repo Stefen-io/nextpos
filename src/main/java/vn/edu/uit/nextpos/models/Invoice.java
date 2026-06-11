@@ -23,6 +23,8 @@ public class Invoice {
     private int id;
     private int customerId;
     private int employeeId;
+    private Integer tableId;
+    private Integer discountId;
     private BigDecimal total; // Tổng tiền của hóa đơn, có thể được tính động
     private LocalDateTime createdAt; // Thời gian tạo hóa đơn
 
@@ -104,6 +106,40 @@ public class Invoice {
      */
     public void setEmployeeId(int e) {
         this.employeeId = e;
+    }
+
+    /**
+     * @return mã bàn (nullable; {@code <= 0} hoặc {@code null} nghĩa là không áp dụng)
+     */
+    public Integer getTableId() {
+        return tableId;
+    }
+
+    public void setTableId(Integer tableId) {
+        this.tableId = tableId;
+    }
+
+    /**
+     * @return mã giảm giá (nullable; {@code <= 0} hoặc {@code null} nghĩa là không áp dụng)
+     */
+    public Integer getDiscountId() {
+        return discountId;
+    }
+
+    public void setDiscountId(Integer discountId) {
+        this.discountId = discountId;
+    }
+
+    /**
+     * Optional FK fields ({@code customer_id}, {@code table_id}, {@code discount_id})
+     * use {@code <= 0} or {@code null} to mean unset (persisted as SQL NULL).
+     */
+    public static boolean isUnsetOptionalId(int id) {
+        return id <= 0;
+    }
+
+    public static boolean isUnsetOptionalId(Integer id) {
+        return id == null || id <= 0;
     }
 
     /**

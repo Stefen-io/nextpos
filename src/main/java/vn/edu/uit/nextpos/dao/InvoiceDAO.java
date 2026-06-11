@@ -1,12 +1,12 @@
 package vn.edu.uit.nextpos.dao;
 
-import com.google.gson.Gson;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.math.BigDecimal;
 import vn.edu.uit.nextpos.models.*;
 import vn.edu.uit.nextpos.util.DatabaseConnection;
+import vn.edu.uit.nextpos.util.JsonUtil;
 
 /**
  * InvoiceDAO dùng để thao tác dữ liệu hóa đơn trong hệ thống POS.
@@ -67,33 +67,39 @@ public class InvoiceDAO {
         return null;
     }
 
-    /* ---------------------- THÊM MỚI -------------------------- */
-    public boolean insertInvoice(Invoice inv) {
-        String sqlInv = "INSERT INTO invoices (customer_id, employee_id, total, created_at) VALUES (?,?,?,?)";
+    /* ---------------------- POS CHECKOUT -------------------------- */
+    public boolean checkout(Invoice inv) {
+        String sqlInv = "INSERT INTO invoices (customer_id, employee_id, table_id, discount_id, total, created_at) VALUES (?,?,?,?,?,?)";
         String sqlItm = "INSERT INTO invoice_items (invoice_id, product_id, quantity, unit_price) VALUES (?,?,?,?)";
+        String sqlUpdateStock = "UPDATE products SET quantity = quantity - ? WHERE id = ?";
 
-        try (Connection cn = DatabaseConnection.getConnection()) {
-            cn.setAutoCommit(false);
+        Connection conn = null;
+        try {
+            conn = DatabaseConnection.getConnection();
+            conn.setAutoCommit(false);
 
-            // 1. Thêm hóa đơn
-            try (PreparedStatement psInv = cn.prepareStatement(sqlInv, Statement.RETURN_GENERATED_KEYS)) {
-                psInv.setInt(1, inv.getCustomerId());
+            int invoiceId;
+            try (PreparedStatement psInv = conn.prepareStatement(sqlInv, Statement.RETURN_GENERATED_KEYS)) {
+                setOptionalInt(psInv, 1, inv.getCustomerId());
                 psInv.setInt(2, inv.getEmployeeId());
-                psInv.setBigDecimal(3, inv.getTotal());
-                psInv.setTimestamp(4, Timestamp.valueOf(inv.getCreatedAt()));
+                setOptionalInteger(psInv, 3, inv.getTableId());
+                setOptionalInteger(psInv, 4, inv.getDiscountId());
+                psInv.setBigDecimal(5, inv.getTotal());
+                psInv.setTimestamp(6, Timestamp.valueOf(inv.getCreatedAt()));
                 psInv.executeUpdate();
 
                 try (ResultSet gk = psInv.getGeneratedKeys()) {
-                    if (gk.next()) {
-                        inv.setId(gk.getInt(1));
+                    if (!gk.next()) {
+                        throw new SQLException("Không lấy được ID hóa đơn.");
                     }
+                    invoiceId = gk.getInt(1);
+                    inv.setId(invoiceId);
                 }
             }
 
-            // 2. Thêm sản phẩm trong hóa đơn
-            try (PreparedStatement psItm = cn.prepareStatement(sqlItm)) {
+            try (PreparedStatement psItm = conn.prepareStatement(sqlItm)) {
                 for (InvoiceItem it : inv.getItems()) {
-                    psItm.setInt(1, inv.getId());
+                    psItm.setInt(1, invoiceId);
                     psItm.setInt(2, it.getProductId());
                     psItm.setInt(3, it.getQuantity());
                     psItm.setBigDecimal(4, it.getUnitPrice());
@@ -102,23 +108,47 @@ public class InvoiceDAO {
                 psItm.executeBatch();
             }
 
-            // 3. Ghi AuditLog
-            Gson gson = new Gson();
+            try (PreparedStatement updateStock = conn.prepareStatement(sqlUpdateStock)) {
+                for (InvoiceItem it : inv.getItems()) {
+                    updateStock.setInt(1, it.getQuantity());
+                    updateStock.setInt(2, it.getProductId());
+                    updateStock.addBatch();
+                }
+                updateStock.executeBatch();
+            }
+
+            int auditEmployeeId = inv.getEmployeeId() > 0 ? inv.getEmployeeId() : defaultEmployeeId;
             AuditLog log = new AuditLog(
-                    defaultEmployeeId,
+                    auditEmployeeId,
                     "INSERT",
                     "invoices",
-                    inv.getId(),
+                    invoiceId,
                     null,
-                    gson.toJson(inv)
+                    JsonUtil.gson().toJson(inv)
             );
-            new AuditLogDAO(cn).insertAuditLog(log);
+            new AuditLogDAO(conn).insertAuditLog(log);
 
-            cn.commit();
+            conn.commit();
             return true;
         } catch (Exception ex) {
             ex.printStackTrace();
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException rollbackEx) {
+                    rollbackEx.printStackTrace();
+                }
+            }
             return false;
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException closeEx) {
+                    closeEx.printStackTrace();
+                }
+            }
         }
     }
 
@@ -162,7 +192,7 @@ public class InvoiceDAO {
             }
 
             // 5. Ghi AuditLog
-            Gson gson = new Gson();
+            var gson = JsonUtil.gson();
             AuditLog log = new AuditLog(
                     defaultEmployeeId,
                     "UPDATE",
@@ -205,13 +235,12 @@ public class InvoiceDAO {
             }
 
             // 4. Ghi AuditLog
-            Gson gson = new Gson();
             AuditLog log = new AuditLog(
                     defaultEmployeeId,
                     "DELETE",
                     "invoices",
                     id,
-                    gson.toJson(old),
+                    JsonUtil.gson().toJson(old),
                     null
             );
             new AuditLogDAO(cn).insertAuditLog(log);
@@ -224,15 +253,40 @@ public class InvoiceDAO {
         }
     }
 
+    private void setOptionalInt(PreparedStatement ps, int index, int value) throws SQLException {
+        if (Invoice.isUnsetOptionalId(value)) {
+            ps.setNull(index, Types.INTEGER);
+        } else {
+            ps.setInt(index, value);
+        }
+    }
+
+    private void setOptionalInteger(PreparedStatement ps, int index, Integer value) throws SQLException {
+        if (Invoice.isUnsetOptionalId(value)) {
+            ps.setNull(index, Types.INTEGER);
+        } else {
+            ps.setInt(index, value);
+        }
+    }
+
     /* ================ MAPPING ======================= */
     private Invoice toInvoice(ResultSet rs, boolean withTotal) throws SQLException {
-        return new Invoice(
+        Invoice inv = new Invoice(
                 rs.getInt("id"),
                 rs.getInt("customer_id"),
                 rs.getInt("employee_id"),
                 withTotal ? rs.getBigDecimal("total") : BigDecimal.ZERO,
                 rs.getTimestamp("created_at").toLocalDateTime()
         );
+        int tableId = rs.getInt("table_id");
+        if (!rs.wasNull()) {
+            inv.setTableId(tableId);
+        }
+        int discountId = rs.getInt("discount_id");
+        if (!rs.wasNull()) {
+            inv.setDiscountId(discountId);
+        }
+        return inv;
     }
 
     private InvoiceItem toItem(ResultSet rs) throws SQLException {

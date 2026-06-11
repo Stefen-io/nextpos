@@ -2,13 +2,18 @@ package vn.edu.uit.nextpos.ui.panel;
 
 import java.awt.*;
 import java.io.File;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import vn.edu.uit.nextpos.config.AppPaths;
+import vn.edu.uit.nextpos.dao.InvoiceDAO;
 import vn.edu.uit.nextpos.dao.ProductDAO;
-import vn.edu.uit.nextpos.models.InvoiceModel;
+import vn.edu.uit.nextpos.models.Invoice;
+import vn.edu.uit.nextpos.models.InvoiceItem;
 import vn.edu.uit.nextpos.models.Product;
 import vn.edu.uit.nextpos.ui.components.RoundedButton;
 import vn.edu.uit.nextpos.util.BarcodeScanner;
@@ -300,16 +305,8 @@ public class POSPanel extends JPanel {
             double vatAmount = total * vatRate;
             double discountAmount = total * discountRate;
             double payable2 = total + vatAmount - discountAmount;
-            InvoiceModel invoice = new InvoiceModel(
-                    0, // customerId
-                    Session.getEmployeeId(),
-                    0, // tableId
-                    0, // discountId
-                    payable2, // tổng cuối cùng cần thanh toán
-                    new java.util.Date(),
-                    items
-            );
-            boolean success = new ProductDAO().saveOrder(invoice);
+            Invoice invoice = buildCheckoutInvoice(items, Session.getEmployeeId(), payable2);
+            boolean success = new InvoiceDAO().checkout(invoice);
             if (success) {
                 JOptionPane.showMessageDialog(this, "✅ Thanh toán thành công!");
 
@@ -327,6 +324,29 @@ public class POSPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "❌ Có lỗi xảy ra khi lưu hóa đơn!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+
+    private Invoice buildCheckoutInvoice(List<Product> items, int employeeId, double payable) {
+        Invoice invoice = new Invoice();
+        invoice.setCustomerId(0);
+        invoice.setEmployeeId(employeeId);
+        invoice.setTableId(null);
+        invoice.setDiscountId(null);
+        invoice.setTotal(BigDecimal.valueOf(payable));
+        invoice.setCreatedAt(LocalDateTime.now());
+
+        List<InvoiceItem> lineItems = new ArrayList<>();
+        for (Product p : items) {
+            lineItems.add(new InvoiceItem(
+                    0,
+                    0,
+                    p.getId(),
+                    p.getQuantity(),
+                    BigDecimal.valueOf(p.getPrice())
+            ));
+        }
+        invoice.setItems(lineItems);
+        return invoice;
     }
 
     private void setComponentBackgroundWhite(Component component) {

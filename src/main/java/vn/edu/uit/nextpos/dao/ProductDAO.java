@@ -3,7 +3,6 @@ package vn.edu.uit.nextpos.dao;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import vn.edu.uit.nextpos.models.InvoiceModel;
 import vn.edu.uit.nextpos.models.Product;
 import vn.edu.uit.nextpos.util.DatabaseConnection;
 import com.google.gson.Gson;
@@ -15,8 +14,7 @@ import vn.edu.uit.nextpos.dao.AuditLogDAO;
  * hóa đơn trong hệ thống POS.
  *
  * Cung cấp các phương thức để: - Lấy danh sách sản phẩm - Thêm, sửa, xóa sản
- * phẩm - Tìm kiếm sản phẩm theo barcode - Lưu hóa đơn bán hàng và cập nhật tồn
- * kho
+ * phẩm - Tìm kiếm sản phẩm theo barcode
  *
  * Sử dụng kết nối từ lớp DatabaseConnection để thao tác với database.
  *
@@ -215,120 +213,4 @@ public class ProductDAO {
         return null;
     }
 
-    /**
-     * Lưu đơn hàng mới vào hệ thống, bao gồm: - Thêm hóa đơn - Thêm chi tiết
-     * sản phẩm (invoice_items) - Trừ số lượng tồn kho tương ứng
-     *
-     * Tất cả thực hiện trong một giao dịch (transaction).
-     *
-     * @param invoice đối tượng hóa đơn cần lưu
-     * @return true nếu thành công, false nếu lỗi
-     */
-    public boolean saveOrder(InvoiceModel invoice) {
-        Connection conn = null;
-        PreparedStatement insertInvoice = null;
-        PreparedStatement insertItems = null;
-        PreparedStatement updateStock = null;
-        ResultSet generatedKeys = null;
-
-        try {
-            conn = DatabaseConnection.getConnection();
-            conn.setAutoCommit(false);
-
-            // 1. Thêm hóa đơn
-            String sqlInvoice = "INSERT INTO invoices (customer_id, employee_id, table_id, discount_id, total, created_at) VALUES (?, ?, ?, ?, ?, ?)";
-            insertInvoice = conn.prepareStatement(sqlInvoice, Statement.RETURN_GENERATED_KEYS);
-
-            if (invoice.getCustomerId() <= 0) {
-                insertInvoice.setNull(1, Types.INTEGER);
-            } else {
-                insertInvoice.setInt(1, invoice.getCustomerId());
-            }
-
-            insertInvoice.setInt(2, invoice.getEmployeeId());
-
-            if (invoice.getTableId() <= 0) {
-                insertInvoice.setNull(3, Types.INTEGER);
-            } else {
-                insertInvoice.setInt(3, invoice.getTableId());
-            }
-
-            if (invoice.getDiscountId() <= 0) {
-                insertInvoice.setNull(4, Types.INTEGER);
-            } else {
-                insertInvoice.setInt(4, invoice.getDiscountId());
-            }
-
-            insertInvoice.setDouble(5, invoice.getTotal());
-            insertInvoice.setDate(6, new java.sql.Date(invoice.getCreatedAt().getTime()));
-            insertInvoice.executeUpdate();
-
-            generatedKeys = insertInvoice.getGeneratedKeys();
-            if (!generatedKeys.next()) {
-                throw new SQLException("Không lấy được ID hóa đơn.");
-            }
-
-            int invoiceId = generatedKeys.getInt(1);
-
-            // 2. Thêm chi tiết sản phẩm
-            String sqlItem = "INSERT INTO invoice_items (invoice_id, product_id, quantity, unit_price) VALUES (?, ?, ?, ?)";
-            insertItems = conn.prepareStatement(sqlItem);
-
-            for (Product p : invoice.getItems()) {
-                insertItems.setInt(1, invoiceId);
-                insertItems.setInt(2, p.getId());
-                insertItems.setInt(3, p.getQuantity());
-                insertItems.setDouble(4, p.getPrice());
-                insertItems.addBatch();
-            }
-            insertItems.executeBatch();
-
-            // 3. Trừ tồn kho
-            String sqlUpdate = "UPDATE products SET quantity = quantity - ? WHERE id = ?";
-            updateStock = conn.prepareStatement(sqlUpdate);
-
-            for (Product p : invoice.getItems()) {
-                updateStock.setInt(1, p.getQuantity());
-                updateStock.setInt(2, p.getId());
-                updateStock.addBatch();
-            }
-            updateStock.executeBatch();
-
-            conn.commit();
-            return true;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            try {
-                if (conn != null) {
-                    conn.rollback();
-                }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-            return false;
-
-        } finally {
-            try {
-                if (generatedKeys != null) {
-                    generatedKeys.close();
-                }
-                if (insertInvoice != null) {
-                    insertInvoice.close();
-                }
-                if (insertItems != null) {
-                    insertItems.close();
-                }
-                if (updateStock != null) {
-                    updateStock.close();
-                }
-                if (conn != null) {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
 }
