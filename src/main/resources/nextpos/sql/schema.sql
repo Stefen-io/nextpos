@@ -187,11 +187,11 @@ INSERT INTO roles(name) VALUES ('Admin'), ('Nhân viên');
 
 -- Nhân viên
 INSERT INTO employees(name, username, password, role_id, phone, email) 
-VALUES ('Quản trị viên', 'admin', 'admin', 1, '0869938981', '@gmail.com');
+VALUES ('Quản trị viên', 'admin', 'admin', 1, '0869961081', '@gmail.com');
 
 -- Cài đặt hệ thống
 INSERT INTO settings (id, store_name, address, phone, email, logo_path, tax_rate, currency, invoice_prefix, printer_name, default_language, backup_path, created_at, updated_at)
-VALUES (1, 'POS - Quản lý bán hàng', 'Số 1 đường số 17A, phường An Lạc, quận Bình Tân, TP. Hồ Chí Minh', '0869938981', 'info@abcshop.vn', 'logo.png', 10, 'VND', 'INV-', 'Printer_POS_1', 'VI', 'D:/POS/backup/', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+VALUES (1, 'POS - Quản lý bán hàng', 'Số 1 đường số 17A, phường An Lạc, quận Bình Tân, TP. Hồ Chí Minh', '0869961081', 'info@abcshop.vn', 'logo.png', 10, 'VND', 'INV-', 'Printer_POS_1', 'VI', 'D:/POS/backup/', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- Phân loại sản phẩm
 INSERT INTO categories(name, description)
