@@ -5,10 +5,10 @@ Desktop Point of Sale (POS) for mini-marts and convenience stores. Built with **
 ## Prerequisites
 
 | Requirement | Version |
-|-------------|---------|
-| JDK | 21+ |
-| Maven | 3.9+ |
-| MySQL | 8+ |
+| ----------- | ------- |
+| JDK         | 21+     |
+| Maven       | 3.9+    |
+| MySQL       | 8+      |
 
 Create the database before first run:
 
@@ -65,13 +65,13 @@ For `mvn exec:java`, the flag is applied via `.mvn/jvm.config` (same JVM as Mave
 
 Settings live in `src/main/resources/application.properties`:
 
-| Key | Default | Description |
-|-----|---------|-------------|
-| `app.data.dir` | `data` | Runtime data root (relative to working directory) |
-| `app.db.url` | `jdbc:mysql://127.0.0.1:3306/nextpos` | JDBC connection URL |
-| `app.db.user` | `root` | MySQL username |
-| `app.db.password` | *(empty)* | MySQL password |
-| `app.seed-on-startup` | `false` | Run SQL seed on startup (drops all tables) |
+| Key                   | Default                               | Description                                       |
+| --------------------- | ------------------------------------- | ------------------------------------------------- |
+| `app.data.dir`        | `data`                                | Runtime data root (relative to working directory) |
+| `app.db.url`          | `jdbc:mysql://127.0.0.1:3306/nextpos` | JDBC connection URL                               |
+| `app.db.user`         | `root`                                | MySQL username                                    |
+| `app.db.password`     | _(empty)_                             | MySQL password                                    |
+| `app.seed-on-startup` | `false`                               | Run SQL seed on startup (drops all tables)        |
 
 Override any key at runtime with `-D`:
 
@@ -109,38 +109,14 @@ nextpos/
 
 On startup the app creates `data/` under the working directory (configurable via `app.data.dir`).
 
-| Path | Purpose |
-|------|---------|
-| `data/pictures/` | Product image uploads |
+| Path                       | Purpose                                         |
+| -------------------------- | ----------------------------------------------- |
+| `data/pictures/`           | Product image uploads                           |
 | `data/session/account.txt` | Saved credentials for auto-login on next launch |
-
-## Upgrading from `pos_app` database
-
-If you previously used the legacy `pos_app` MySQL schema, either seed a fresh `nextpos` database:
-
-```bash
-mvn exec:java -Dapp.seed-on-startup=true
-```
-
-Or copy data from the old database:
-
-```bash
-mysqldump -u <user> -p pos_app | mysql -u <user> -p nextpos
-```
-
-Then point `app.db.url` at `jdbc:mysql://127.0.0.1:3306/nextpos`.
 
 ## Testing
 
 By default, `mvn test` runs unit tests (config, resources, util) without needing MySQL.
-
-To run the DB smoke test, set `NEXTPOS_DB_TEST=true` and run:
-
-```bash
-NEXTPOS_DB_TEST=true mvn test -Dtest=DatabaseConnectionTest
-```
-
-For `DatabaseConnectionTest`, MySQL must be running with the database configured in `src/main/resources/application.properties` (`app.db.url`, `app.db.user`, `app.db.password`).
 
 ## Contributing
 
@@ -148,4 +124,4 @@ Contributions welcome. Open an issue or pull request with a clear description of
 
 ## License
 
-See repository license terms. *(License file TBD.)*
+Educational purpose only.
