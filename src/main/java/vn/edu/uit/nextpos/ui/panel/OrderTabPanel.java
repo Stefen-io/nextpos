@@ -26,7 +26,7 @@ public class OrderTabPanel extends JPanel {
         setBackground(Color.WHITE);
 
         // === Cài đặt bảng ===
-        table.setRowHeight(38);
+        table.setRowHeight(36);
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         table.setBackground(Color.WHITE);
         table.setForeground(Color.BLACK);

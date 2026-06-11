@@ -46,6 +46,12 @@ public class CustomerPanel extends JPanel {
         table.getTableHeader().setBackground(new Color(230, 230, 230));
         styleTable(table);
 
+        TableColumn actionColumn = table.getColumn("Hành động");
+        actionColumn.setMinWidth(100);
+        actionColumn.setPreferredWidth(100);
+        actionColumn.setCellRenderer(new ButtonRenderer());
+        actionColumn.setCellEditor(new CustomerButtonEditor(model, dao, this::loadTable));
+
         add(buildControlPanel(), BorderLayout.NORTH);
         add(buildTablePanel(), BorderLayout.CENTER);
         loadTable();
@@ -142,11 +148,6 @@ public class CustomerPanel extends JPanel {
         for (int i = 0; i < tbl.getColumnCount(); i++) {
             tbl.getColumnModel().getColumn(i).setCellRenderer(center);
         }
-
-        tbl.getColumn("Hành động").setCellRenderer(new ButtonRenderer());
-        tbl.getColumn("Hành động").setCellEditor(
-                new CustomerButtonEditor(model, dao, this::loadTable)
-        );
     }
 
     private void loadTable() {

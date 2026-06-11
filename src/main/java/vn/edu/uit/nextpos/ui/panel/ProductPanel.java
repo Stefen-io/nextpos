@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 import vn.edu.uit.nextpos.config.AppPaths;
 import vn.edu.uit.nextpos.dao.ProductDAO;
 import vn.edu.uit.nextpos.models.Product;
@@ -60,11 +61,15 @@ public class ProductPanel extends JPanel {
             }
         };
         table = new JTable(model);
-        table.setRowHeight(60);
+        table.setRowHeight(54);
         styleTable(table);
         table.getColumn("Hình ảnh").setCellRenderer(new ImageRenderer());
-        table.getColumn("Hành động").setCellRenderer(new ProductButtonEditor.BtnRenderer());
-        table.getColumn("Hành động").setCellEditor(new ProductButtonEditor(model, dao, this::loadTable));
+
+        TableColumn actionColumn = table.getColumn("Hành động");
+        actionColumn.setMinWidth(100);
+        actionColumn.setPreferredWidth(100);
+        actionColumn.setCellRenderer(new ProductButtonEditor.BtnRenderer());
+        actionColumn.setCellEditor(new ProductButtonEditor(model, dao, this::loadTable));
 
         RoundedTextField tfSearch = new RoundedTextField(20, 15);
         JButton btnSearch = new RoundedButton("Tìm", 15);

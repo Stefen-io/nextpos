@@ -24,12 +24,14 @@ public class EmployeePanel extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         if (!Session.isAdmin()) {
-            add(new JLabel("Bạn không có quyền truy cập chức năng này.", SwingConstants.CENTER), BorderLayout.CENTER);
+            add(new JLabel("Bạn không có quyền truy cập chức năng này.", SwingConstants.CENTER),
+                    BorderLayout.CENTER);
             return;
         }
 
         // ==== Model & Table ====
-        model = new DefaultTableModel(new String[]{"ID", "Tên", "Username", "Role", "SĐT", "Email", "Hành động"}, 0) {
+        model = new DefaultTableModel(
+                new String[] {"ID", "Tên", "Username", "Role", "SĐT", "Email", "Hành động"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return column == 6;
@@ -37,7 +39,7 @@ public class EmployeePanel extends JPanel {
         };
 
         table = new JTable(model);
-        table.setRowHeight(36);
+        table.setRowHeight(54);
         table.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         table.setBackground(Color.WHITE);
         table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
@@ -45,8 +47,11 @@ public class EmployeePanel extends JPanel {
         table.getTableHeader().setPreferredSize(new Dimension(100, 35));
         styleTable(table);
 
-        table.getColumn("Hành động").setCellRenderer(new EmployeeButtonEditor.BtnRenderer());
-        table.getColumn("Hành động").setCellEditor(
+        TableColumn actionColumn = table.getColumn("Hành động");
+        actionColumn.setMinWidth(100);
+        actionColumn.setPreferredWidth(100);
+        actionColumn.setCellRenderer(new EmployeeButtonEditor.BtnRenderer());
+        actionColumn.setCellEditor(
                 new EmployeeButtonEditor(model, dao, this::loadTable, this::showForm));
 
         // ==== Thuộc tính nhân viên ====
@@ -113,19 +118,18 @@ public class EmployeePanel extends JPanel {
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         centerRenderer.setVerticalAlignment(JLabel.CENTER);
-        for (int i = 0; i < table.getColumnCount(); i++) {
+        for (int i = 0; i < table.getColumnCount() - 1; i++) {
             table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
+        table.getColumn("ID").setPreferredWidth(50);
     }
 
     private void loadTable() {
         model.setRowCount(0);
         List<Employee> list = dao.getAllEmployees();
         for (Employee e : list) {
-            model.addRow(new Object[]{
-                e.getId(), e.getName(), e.getUsername(), e.getRole_id(),
-                e.getPhone(), e.getEmail(), "Hành động"
-            });
+            model.addRow(new Object[] {e.getId(), e.getName(), e.getUsername(), e.getRole_id(),
+                    e.getPhone(), e.getEmail(), "Hành động"});
         }
     }
 
@@ -133,13 +137,10 @@ public class EmployeePanel extends JPanel {
         model.setRowCount(0);
         kw = kw.toLowerCase();
         for (Employee e : dao.getAllEmployees()) {
-            if (e.getName().toLowerCase().contains(kw)
-                    || e.getUsername().toLowerCase().contains(kw)
+            if (e.getName().toLowerCase().contains(kw) || e.getUsername().toLowerCase().contains(kw)
                     || e.getPhone().contains(kw)) {
-                model.addRow(new Object[]{
-                    e.getId(), e.getName(), e.getUsername(),
-                    e.getRole_id(), e.getPhone(), e.getEmail(), "Hành động"
-                });
+                model.addRow(new Object[] {e.getId(), e.getName(), e.getUsername(), e.getRole_id(),
+                        e.getPhone(), e.getEmail(), "Hành động"});
             }
         }
     }

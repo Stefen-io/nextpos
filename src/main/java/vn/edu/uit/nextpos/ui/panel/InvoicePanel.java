@@ -36,7 +36,7 @@ public class InvoicePanel extends JPanel {
         };
 
         table = new JTable(model);
-        table.setRowHeight(36);
+        table.setRowHeight(54);
         table.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 13));
         table.getTableHeader().setBackground(new Color(230, 230, 230));
@@ -44,8 +44,11 @@ public class InvoicePanel extends JPanel {
         table.setBackground(Color.WHITE);
         styleTable(table);
 
-        table.getColumn("Hành động").setCellRenderer(new BtnRenderer());
-        table.getColumn("Hành động").setCellEditor(new BtnEditor(model, dao, this::loadTable));
+        TableColumn actionColumn = table.getColumn("Hành động");
+        actionColumn.setMinWidth(100);
+        actionColumn.setPreferredWidth(100);
+        actionColumn.setCellRenderer(new BtnRenderer());
+        actionColumn.setCellEditor(new BtnEditor(model, dao, this::loadTable));
 
         JScrollPane scroll = new JScrollPane(table);
         scroll.setBorder(BorderFactory.createTitledBorder("Danh sách hoá đơn"));

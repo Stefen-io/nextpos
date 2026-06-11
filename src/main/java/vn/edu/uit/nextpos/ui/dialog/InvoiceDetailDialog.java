@@ -51,7 +51,7 @@ public class InvoiceDetailDialog extends JDialog {
         };
 
         JTable table = new JTable(model);
-        table.setRowHeight(60);
+        table.setRowHeight(36);
         table.getColumnModel().getColumn(0).setCellRenderer(new ImageRenderer());
 
         for (InvoiceItem item : invoice.getItems()) {
