@@ -106,6 +106,9 @@ http-client.private.env.json
 # Local History for Visual Studio Code
 .history/
 
+# Maven build output
+target/
+
 # Compiled class file
 *.class
 

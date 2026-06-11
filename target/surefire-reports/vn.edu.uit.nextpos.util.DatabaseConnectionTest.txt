@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: vn.edu.uit.nextpos.util.DatabaseConnectionTest
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 0.012 s -- in vn.edu.uit.nextpos.util.DatabaseConnectionTest
