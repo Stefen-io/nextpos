@@ -106,6 +106,9 @@ http-client.private.env.json
 # Local History for Visual Studio Code
 .history/
 
+# Maven build output
+target/
+
 # Compiled class file
 *.class
 
@@ -124,6 +127,12 @@ replay_pid*
 
 # Git worktrees
 .worktrees/
+
+# Runtime data (mutable uploads, auto-login session)
+data/pictures/*
+!data/pictures/.gitkeep
+data/session/*
+!data/session/.gitkeep
 
 # Miscellaneous
 **/.agents/
